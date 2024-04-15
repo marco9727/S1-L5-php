@@ -16,8 +16,13 @@ $options = [
 // comando che connette al database
 $pdo = new PDO($dsn, $user, $pass, $options);
 
+$search = $_GET["search"] ?? " ";
+
 // SELECT DI TUTTE LE RIGHE
-$stmt = $pdo->query('SELECT * FROM libri');
+$stmt = $pdo->prepare('SELECT * FROM libri WHERE titolo || autore LIKE ?');  
+$stmt-> execute( ([ 
+    "%$search%"
+]))
 
 
 ?>
@@ -28,17 +33,35 @@ $stmt = $pdo->query('SELECT * FROM libri');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libreria</title>
-   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-   
 </head>
 <body>
-    <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Libreria</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                </ul>
+                <form class="d-flex" action="" method="get">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Cerca..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Cerca</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
         <h1 class="my-4">Elenco Libri</h1>
         <ul class="list-group">
             <?php foreach ($stmt as $row) { ?>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span><?= " $row[titolo] - $row[autore] - $row[genere] - $row[anno_pubblicazione]" ?></span>
+                    <span><?= "$row[titolo] - $row[autore] - $row[genere] - $row[anno_pubblicazione]" ?></span>
                     <div class="btn-group" role="group" aria-label="Azioni">
                         <a href="/S1-L5/dettagli.php?id=<?= $row['id'] ?>" class="btn btn-primary btn-sm">Dettagli</a>
                         <a href="/S1-L5/elimina.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm">Elimina</a>
@@ -47,6 +70,7 @@ $stmt = $pdo->query('SELECT * FROM libri');
             <?php } ?>
         </ul>
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
