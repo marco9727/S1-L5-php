@@ -1,16 +1,36 @@
 <?php
 
-include __DIR__ . "/includes/db.php";
+// include __DIR__ . "/includes/db.php";
+
+$host = 'localhost';
+$db   = 'gestione_libreria';
+$user = 'root';
+$pass = '';
+
+$dsn = "mysql:host=$host;dbname=$db";
+
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+// comando che connette al database
+$pdo = new PDO($dsn, $user, $pass, $options);
+
+
 
 $search = $_GET["search"] ?? " ";
 
 
 
 // SELECT DI TUTTE LE RIGHE
-$stmt = $pdo->prepare('SELECT * FROM libri WHERE titolo || autore LIKE ?');  
-$stmt-> execute( ([ 
+$stmt = $pdo->prepare('SELECT * FROM libri WHERE titolo LIKE ? OR autore LIKE ?');  
+$stmt->execute([
+    "%$search%",
     "%$search%"
-]));
+]);
+
 
 include  __DIR__ . "/includes/initialHtml.php";
 ?>
@@ -27,6 +47,9 @@ include  __DIR__ . "/includes/initialHtml.php";
                     <li class="nav-item">
                         <a class="nav-link" href="#">Home</a>
                     </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="/S1-L5/createbook.php">Aggiungi libro</a>
+                </li>
                 </ul>
                 <form class="d-flex" action="" method="get">
                     <input class="form-control me-2" type="search" name="search" placeholder="Cerca..." aria-label="Search">

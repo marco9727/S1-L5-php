@@ -14,4 +14,5 @@ $options = [
 
 // comando che connette al database
 $pdo = new PDO($dsn, $user, $pass, $options);
+
 ?>
